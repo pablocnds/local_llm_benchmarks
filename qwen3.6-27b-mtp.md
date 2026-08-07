@@ -14,7 +14,7 @@
 | Unsloth Q6_K | 9.61 t/s | **20.95 t/s** | 84.27% | 0.001967 |
 | Unsloth Q8_0 | 7.74 t/s | 16.77 t/s | 81.76% | reference |
 
-## llama-server command
+## llama-server command used
 
 ```bash
 VK_DRIVER_FILES=/usr/share/vulkan/icd.d/radeon_icd.json \
