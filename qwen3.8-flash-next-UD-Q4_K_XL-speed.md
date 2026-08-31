@@ -17,6 +17,28 @@
 
 Generation was measured after filling each context. The 128K generation result is a shorter 14-token sample because the model emitted EOS. MTP startup fails because this early GGUF contains no MTP/NextN layers.
 
+## Concurrent completion throughput
+
+- **Date:** 2026-08-31
+- **Service:** existing `llama-server-pool` at `http://100.97.90.14:3000`
+- **Profile:** `qwen38-flash-next-q4xl-concurrency`; Vulkan full offload, F16 KV,
+  flash attention, batch 2048, ubatch 256, 32K context, 16 parallel slots.
+- **Workload:** three synchronized rounds per point; each request generated 256
+  deterministic tokens from the same short prompt. Figures are medians of the
+  round-level aggregate throughput.
+
+| Concurrent requests | Aggregate generation throughput | Median per-stream throughput | Result |
+|---:|---:|---:|---|
+| 1 | 24.18 t/s | 25.20 t/s | completed |
+| 2 | 36.53 t/s | 19.30 t/s | completed |
+| 4 | 52.94 t/s | 14.06 t/s | completed |
+| 8 | **69.52 t/s** | 9.12 t/s | completed; best measured total throughput |
+| 12 | — | — | did not complete a first round after more than four minutes; stopped |
+
+Aggregate throughput scaled through eight concurrent requests. Twelve requests
+caused a clear saturation collapse, so eight is the practical ceiling for this
+profile and workload.
+
 ## Commands used
 
 The 512–64K prompt-processing and generation measurements used:
